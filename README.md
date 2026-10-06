@@ -102,7 +102,8 @@ Please remove the integration and re-add it to make it work again.
 | {Robot Name} Cycle Time              | Sensor        | Indicates the time the robot is cleaning                                    | Measurement of duration in minutes                                                                                        |
 | {Robot Name} Cycle Time Left         | Sensor        | Indicates the time left for the robot to complete the cycle                 | Measurement of duration in seconds                                                                                        |
 | {Robot Name} Remote                  | Remote        | Provides virtual joystick control for manual robot navigation               | Features: Activity (Stop, Forward, Backward, Left, Right), Turn On, Turn Off                                              |
-| {Robot Name}                         | Vacuum        | Provides functionality of vacuum to the robot                               | Features: State, Fan Speed (Cleaning Mode), Return Home (Pickup), Turn On, Turn Off, Send Command (Schedule, Delay Clean) |
+| {Robot Name}                         | Vacuum        | Provides functionality of vacuum to the robot                               | Features: State, Fan Speed (Cleaning Mode), Start, Pause, Stop, Return Home (Pickup), Locate                              |
+| {Robot Name} Reset Filter Indicator  | Button        | Resets the filter bag indicator after the filter has been cleaned           |                                                                                                                           |
 
 ### Cleaning Modes
 

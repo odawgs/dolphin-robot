@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased
+
+- Fix vacuum pause: it only sent the command when the robot was already docked, so pausing a cleaning robot did nothing
+- Add Stop to the vacuum entity (powers off the robot's power supply, same as pause)
+- Add Reset Filter Indicator button
+- README: remove Send Command (Schedule, Delay Clean) from the vacuum features; it was removed in v1.0.1
+
 ## v1.0.23
 
 - Remove navigate service (`mydolphin_plus.navigate`)
