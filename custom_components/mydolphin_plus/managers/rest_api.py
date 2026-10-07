@@ -7,6 +7,7 @@ import logging
 import secrets
 import sys
 from typing import Any
+from urllib.parse import urlencode
 
 from aiohttp import ClientResponseError, ClientSession
 from aiohttp.hdrs import METH_GET, METH_POST
@@ -244,7 +245,7 @@ class RestAPI:
         if is_valid_email:
             username = self.config_data.username
 
-            request_data = f"{API_REQUEST_SERIAL_EMAIL}={username}"
+            request_data = urlencode({API_REQUEST_SERIAL_EMAIL: username})
 
             payload = await self._async_post(
                 FORGOT_PASSWORD_URL, LOGIN_HEADERS, request_data
@@ -268,7 +269,7 @@ class RestAPI:
         if self._status != ConnectivityStatus.INVALID_ACCOUNT:
             username = self.config_data.username
 
-            request_data = f"{API_REQUEST_SERIAL_EMAIL}={username}"
+            request_data = urlencode({API_REQUEST_SERIAL_EMAIL: username})
 
             payload = await self._async_post(
                 EMAIL_VALIDATION_URL, LOGIN_HEADERS, request_data
@@ -314,7 +315,12 @@ class RestAPI:
             username = self.config_data.username
             password = self.config_data.password
 
-            request_data = f"{API_REQUEST_SERIAL_EMAIL}={username}&{API_REQUEST_SERIAL_PASSWORD}={password}"
+            request_data = urlencode(
+                {
+                    API_REQUEST_SERIAL_EMAIL: username,
+                    API_REQUEST_SERIAL_PASSWORD: password,
+                }
+            )
 
             payload = await self._async_post(LOGIN_URL, LOGIN_HEADERS, request_data)
 
