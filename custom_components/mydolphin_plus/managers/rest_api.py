@@ -296,7 +296,7 @@ class RestAPI:
                     if not status:
                         self._set_status(
                             ConnectivityStatus.INVALID_ACCOUNT,
-                            f"account [{username}] is not valid",
+                            "account is not valid",
                         )
 
         is_valid_account = self._status != ConnectivityStatus.INVALID_ACCOUNT
@@ -345,7 +345,7 @@ class RestAPI:
                     )
 
                 else:
-                    _LOGGER.info(f"Logged in to user {username}")
+                    _LOGGER.info("Logged in to MyDolphin account")
 
                     serial_number = data.get(API_REQUEST_SERIAL_NUMBER)
                     api_token = data.get(API_REQUEST_HEADER_TOKEN)
