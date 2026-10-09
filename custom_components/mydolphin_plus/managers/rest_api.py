@@ -214,7 +214,13 @@ class RestAPI:
         await self._config_manager.reset_login_details()
 
     async def _login(self):
-        if self._config_manager.api_token is None:
+        # A saved login without a robot serial (e.g. the integration was added
+        # before the robot was paired to the account) must be refreshed,
+        # otherwise the empty serial is reused forever
+        if (
+            self._config_manager.api_token is None
+            or not self._config_manager.serial_number
+        ):
             await self._service_login()
 
         else:
@@ -354,7 +360,15 @@ class RestAPI:
                         api_token, serial_number
                     )
 
-                    await self._set_actual_motor_unit_serial()
+                    if not serial_number:
+                        self._set_status(
+                            ConnectivityStatus.FAILED,
+                            "no robot is linked to this account, "
+                            "add the robot in the MyDolphin app first",
+                        )
+
+                    else:
+                        await self._set_actual_motor_unit_serial()
 
         except Exception as ex:
             exc_type, exc_obj, tb = sys.exc_info()
