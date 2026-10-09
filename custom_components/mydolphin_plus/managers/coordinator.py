@@ -4,6 +4,7 @@ import logging
 import sys
 from typing import Callable
 
+from homeassistant.components.button import SERVICE_PRESS
 from homeassistant.components.number.const import SERVICE_SET_VALUE
 from homeassistant.components.remote import ATTR_ACTIVITY, SERVICE_SEND_COMMAND
 from homeassistant.components.vacuum import (
@@ -12,6 +13,7 @@ from homeassistant.components.vacuum import (
     SERVICE_RETURN_TO_BASE,
     SERVICE_SET_FAN_SPEED,
     SERVICE_START,
+    SERVICE_STOP,
     VacuumActivity,
 )
 from homeassistant.const import (
@@ -67,6 +69,7 @@ from ..common.consts import (
     DATA_KEY_POWER_SUPPLY_STATUS,
     DATA_KEY_PWS_ERROR,
     DATA_KEY_REMOTE,
+    DATA_KEY_RESET_FILTER,
     DATA_KEY_ROBOT_ERROR,
     DATA_KEY_ROBOT_STATUS,
     DATA_KEY_ROBOT_TYPE,
@@ -420,6 +423,7 @@ class MyDolphinPlusCoordinator(DataUpdateCoordinator):
             slugify(DATA_KEY_LED): self._get_led_data,
             slugify(DATA_KEY_LED_INTENSITY): self._get_led_intensity_data,
             slugify(DATA_KEY_FILTER_STATUS): self._get_filter_status_data,
+            slugify(DATA_KEY_RESET_FILTER): self._get_reset_filter_data,
             slugify(DATA_KEY_CYCLE_TIME): self._get_cycle_time_data,
             slugify(DATA_KEY_CYCLE_TIME_LEFT): self._get_cycle_time_left_data,
             slugify(DATA_KEY_AWS_BROKER): self._get_aws_broker_data,
@@ -568,6 +572,7 @@ class MyDolphinPlusCoordinator(DataUpdateCoordinator):
             ATTR_ACTIONS: {
                 SERVICE_START: self._vacuum_start,
                 SERVICE_PAUSE: self._vacuum_pause,
+                SERVICE_STOP: self._vacuum_pause,
                 SERVICE_SET_FAN_SPEED: self._set_cleaning_mode,
                 SERVICE_LOCATE: self._vacuum_locate,
                 SERVICE_RETURN_TO_BASE: self._pickup,
@@ -674,6 +679,13 @@ class MyDolphinPlusCoordinator(DataUpdateCoordinator):
                 ATTR_STATUS: filter_state,
             },
             ATTR_ICON: FILTER_BAG_ICONS.get(filter_state),
+        }
+
+        return result
+
+    def _get_reset_filter_data(self, _entity_description) -> dict | None:
+        result = {
+            ATTR_ACTIONS: {SERVICE_PRESS: self._reset_filter_indicator},
         }
 
         return result
@@ -876,6 +888,11 @@ class MyDolphinPlusCoordinator(DataUpdateCoordinator):
 
         if not is_idle_state:
             self._aws_client.pause()
+
+    async def _reset_filter_indicator(self, _entity_description: EntityDescription):
+        _LOGGER.debug("Reset filter bag indicator")
+
+        self._aws_client.reset_filter_indicator()
 
     async def _vacuum_locate(self, entity_description: EntityDescription):
         led_light_entity = self._get_led_data(None)

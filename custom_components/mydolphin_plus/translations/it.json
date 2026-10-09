@@ -33,6 +33,11 @@
     }
   },
   "entity": {
+    "button": {
+      "reset_filter_indicator": {
+        "name": "Azzera indicatore filtro"
+      }
+    },
     "binary_sensor": {
       "aws_broker": {
         "name": "Broker AWS"

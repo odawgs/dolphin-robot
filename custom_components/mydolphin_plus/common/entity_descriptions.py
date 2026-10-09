@@ -4,6 +4,7 @@ from homeassistant.components.binary_sensor import (
     BinarySensorDeviceClass,
     BinarySensorEntityDescription,
 )
+from homeassistant.components.button import ButtonEntityDescription
 from homeassistant.components.light import LightEntityDescription
 from homeassistant.components.number import NumberDeviceClass, NumberEntityDescription
 from homeassistant.components.remote import RemoteEntityDescription, RemoteEntityFeature
@@ -47,6 +48,7 @@ from .consts import (
     DATA_KEY_POWER_SUPPLY_STATUS,
     DATA_KEY_PWS_ERROR,
     DATA_KEY_REMOTE,
+    DATA_KEY_RESET_FILTER,
     DATA_KEY_ROBOT_ERROR,
     DATA_KEY_ROBOT_STATUS,
     DATA_KEY_ROBOT_TYPE,
@@ -126,6 +128,13 @@ class MyDolphinPlusLightEntityDescription(
     platform: Platform | None = Platform.LIGHT
 
 
+@dataclass(frozen=True, kw_only=True)
+class MyDolphinPlusButtonEntityDescription(
+    ButtonEntityDescription, MyDolphinPlusEntityDescription
+):
+    platform: Platform | None = Platform.BUTTON
+
+
 ENTITY_DESCRIPTIONS: list[MyDolphinPlusEntityDescription] = [
     MyDolphinPlusVacuumEntityDescription(
         key=slugify(DATA_KEY_VACUUM),
@@ -140,6 +149,13 @@ ENTITY_DESCRIPTIONS: list[MyDolphinPlusEntityDescription] = [
         features=RemoteEntityFeature.ACTIVITY,
         activity_list=list(JoystickDirection),
         translation_key=slugify(DATA_KEY_REMOTE),
+    ),
+    MyDolphinPlusButtonEntityDescription(
+        key=slugify(DATA_KEY_RESET_FILTER),
+        name=DATA_KEY_RESET_FILTER,
+        icon="mdi:filter-remove-outline",
+        entity_category=EntityCategory.CONFIG,
+        translation_key=slugify(DATA_KEY_RESET_FILTER),
     ),
     MyDolphinPlusLightEntityDescription(
         key=slugify(DATA_KEY_LED),

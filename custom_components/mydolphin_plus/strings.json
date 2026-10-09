@@ -59,6 +59,11 @@
     }
   },
   "entity": {
+    "button": {
+      "reset_filter_indicator": {
+        "name": "Reset Filter Indicator"
+      }
+    },
     "binary_sensor": {
       "aws_broker": {
         "name": "AWS Broker"

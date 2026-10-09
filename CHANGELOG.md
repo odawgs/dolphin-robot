@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased (odawgs fork)
+
+- Add Stop to the vacuum entity (sends power off, same as Pause)
+- Add a Reset Filter Indicator button
+
 ## v1.0.26b3
 
 - Fix pause control so active robots send the power-off command instead of only acting while docked
