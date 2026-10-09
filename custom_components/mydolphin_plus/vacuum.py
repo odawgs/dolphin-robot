@@ -8,6 +8,7 @@ from homeassistant.components.vacuum import (
     SERVICE_RETURN_TO_BASE,
     SERVICE_SET_FAN_SPEED,
     SERVICE_START,
+    SERVICE_STOP,
     StateVacuumEntity,
     VacuumActivity,
 )
@@ -78,6 +79,9 @@ class MyDolphinPlusVacuumEntity(MyDolphinPlusBaseEntity, StateVacuumEntity, ABC)
 
     async def async_pause(self, **kwargs: Any) -> None:
         await self.async_execute_device_action(SERVICE_PAUSE, self.state)
+
+    async def async_stop(self, **kwargs: Any) -> None:
+        await self.async_execute_device_action(SERVICE_STOP, self.state)
 
     async def async_locate(self, **kwargs: Any) -> None:
         """Locate the vacuum cleaner."""
