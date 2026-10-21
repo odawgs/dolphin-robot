@@ -41,7 +41,7 @@ from ..common.consts import (
 )
 from ..common.integration_info import IntegrationInfo
 from ..models.config_data import ConfigData
-from ..models.exceptions import LoginError
+from ..models.exceptions import LoginError, TransientLoginError
 from .config_manager import ConfigManager
 
 _LOGGER = logging.getLogger(__name__)
@@ -87,13 +87,16 @@ async def _cognito_call(
                 _LOGGER.debug(
                     f"Cognito {target} failed, Status: {response.status}, Body: {text}"
                 )
-                raise LoginError(f"Cognito {target} returned {response.status}")
+                message = f"Cognito {target} returned {response.status}"
+                if response.status == 429 or response.status >= 500:
+                    raise TransientLoginError(message)
+                raise LoginError(message)
             return json.loads(text)
     except LoginError:
         raise
     except Exception as ex:
         _LOGGER.debug(f"Cognito {target} request failed, Error: {ex}")
-        raise LoginError(f"Cognito {target} request failed: {ex}") from ex
+        raise TransientLoginError(f"Cognito {target} request failed: {ex}") from ex
 
 
 async def cognito_initiate_auth(
@@ -359,6 +362,13 @@ class RestAPI:
                 refresh_token,
                 integration_info=self._integration_info,
             )
+        except TransientLoginError as ex:
+            # Network or server trouble: keep the tokens and retry with backoff
+            self._set_status(
+                ConnectivityStatus.FAILED,
+                f"refresh could not be checked ({ex}) — will retry",
+            )
+            return False
         except LoginError as ex:
             await self._config_manager.reset_login_details()
             self._set_status(
