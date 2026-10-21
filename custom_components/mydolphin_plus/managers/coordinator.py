@@ -306,7 +306,9 @@ class MyDolphinPlusCoordinator(DataUpdateCoordinator):
             return
 
         try:
-            await entry.async_start_reauth(self.hass)
+            # ConfigEntry.async_start_reauth is a synchronous callback; awaiting
+            # its None result raised "'NoneType' object can't be awaited".
+            entry.async_start_reauth(self.hass)
             self._reauth_in_progress = True
             _LOGGER.warning("Started Home Assistant reauthentication flow")
         except Exception as ex:

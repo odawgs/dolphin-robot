@@ -251,6 +251,14 @@ class ConfigManager:
 
         return value
 
+    async def invalidate_id_token(self):
+        # Force the next login check to fetch a new IdToken with the stored
+        # refresh token, without discarding the refresh token itself.
+        self._data[STORAGE_DATA_ID_TOKEN] = None
+        self._data[STORAGE_DATA_ID_TOKEN_EXPIRES_AT] = None
+
+        await self._save()
+
     async def reset_login_details(self):
         # Reset login-related tokens, but preserve motor_unit_serial
         # so we can re-attach to the same robot after re-authentication

@@ -609,9 +609,11 @@ class RestAPI:
 
         if crex.status == 401:
             # The IdToken is rejected. If the cached token is older than the
-            # backoff window, blow it away and force re-auth so we don't hammer
-            # the API with bad credentials. Otherwise, log quietly and let
-            # _ensure_id_token_valid try a refresh on the next iteration.
+            # backoff window, drop only the IdToken so the next iteration gets
+            # a fresh one with the stored refresh token. The refresh token is
+            # kept: a full re-login is only needed if Cognito rejects that too.
+            # Otherwise, log quietly and let _ensure_id_token_valid try a
+            # refresh on the next iteration.
             flow = "No id token present"
 
             has_id_token = self._config_manager.id_token is not None
@@ -622,9 +624,8 @@ class RestAPI:
                     token_age_seconds = datetime.now().timestamp() - last_fetch
 
                     if token_age_seconds >= RECONNECT_BACKOFF_MAX.total_seconds():
-                        await self._config_manager.reset_login_details()
-                        flow = "Old token, cleared for re-auth"
-                        status = ConnectivityStatus.EXPIRED_TOKEN
+                        await self._config_manager.invalidate_id_token()
+                        flow = "Old token, dropped IdToken to force a refresh"
                     else:
                         flow = "Fresh token within window"
                         forced_log_level = logging.DEBUG
